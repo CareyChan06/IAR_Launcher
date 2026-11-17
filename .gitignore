@@ -2,4 +2,9 @@ build/**
 dist/**
 release/**
 
-*.spec
+__pycache__/
+*.pyc
+/config.json
+/preview/*.png
+
+/release-v1/
