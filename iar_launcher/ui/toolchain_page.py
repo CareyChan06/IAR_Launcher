@@ -145,7 +145,7 @@ class ToolchainPage(QWidget):
         add.clicked.connect(self.add)
         empty = EmptyState(
             "还没有配置工具链",
-            "先自动扫描本机已安装的 IAR，或手动添加 IarIdePm.exe 路径。",
+            "自动扫描本机已安装的 IAR，\n或手动指定 IarIdePm.exe。",
             "chip",
             [scan, add],
         )

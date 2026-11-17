@@ -82,7 +82,7 @@ payload = {
     "schema": 2,
     "toolchains": toolchains,
     "recent_projects": projects,
-    "settings": {"appearance": {"theme": "light", "accent": "red"}},
+    "settings": {"appearance": {"theme": "light", "accent": "red", "titlebar": "custom"}},
 }
 config_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 set_config_override(str(config_path))

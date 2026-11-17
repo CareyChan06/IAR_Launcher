@@ -8,3 +8,6 @@ __pycache__/
 /preview/*.png
 
 /release-v1/
+
+assets/ip-logo/**
+vibe_images/**

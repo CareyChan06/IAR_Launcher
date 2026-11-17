@@ -24,6 +24,7 @@ PRODUCTS = {
 }
 THEMES = {"light", "dark", "system"}
 ACCENTS = {"red", "teal", "blue", "indigo", "violet", "graphite"}
+TITLEBAR_MODES = {"native", "custom"}
 _VERSION_RE = re.compile(r"(?<![\d.])(\d+\.\d+(?:\.\d+)?)(?![\d.])")
 
 
@@ -202,7 +203,9 @@ class ConfigStore:
         if not self.path.exists():
             self.toolchains = []
             self.recent = []
-            self.settings = {"appearance": {"theme": "light", "accent": "red"}}
+            self.settings = {
+            "appearance": {"theme": "light", "accent": "red", "titlebar": "custom"}
+        }
             if create:
                 self.save()
             return
@@ -242,9 +245,11 @@ class ConfigStore:
             appearance = {}
         theme = str(appearance.get("theme", "light"))
         accent = str(appearance.get("accent", "red"))
+        titlebar = str(appearance.get("titlebar", "custom"))
         settings["appearance"] = {
             "theme": theme if theme in THEMES else "light",
             "accent": accent if accent in ACCENTS else "red",
+            "titlebar": titlebar if titlebar in TITLEBAR_MODES else "custom",
         }
         self.settings = settings
         if is_v1:
@@ -265,13 +270,22 @@ class ConfigStore:
     # ── 外观 ──
     @property
     def appearance(self) -> dict[str, str]:
-        return self.settings.setdefault("appearance", {"theme": "light", "accent": "red"})
+        return self.settings.setdefault(
+            "appearance", {"theme": "light", "accent": "red", "titlebar": "custom"}
+        )
 
-    def set_appearance(self, theme: str | None = None, accent: str | None = None) -> None:
+    def set_appearance(
+        self,
+        theme: str | None = None,
+        accent: str | None = None,
+        titlebar: str | None = None,
+    ) -> None:
         if theme in THEMES:
             self.appearance["theme"] = theme
         if accent in ACCENTS:
             self.appearance["accent"] = accent
+        if titlebar in TITLEBAR_MODES:
+            self.appearance["titlebar"] = titlebar
         self.save()
 
     # ── 工具链 ──

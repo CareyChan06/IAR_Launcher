@@ -33,6 +33,8 @@ LIGHT = {
     "control": "#c4d0dd",
     "control_hover": "#9fb1c5",
     "nav_hover": "#e2eaf3",
+    "title_hover": "#d9e3ee",
+    "title_press": "#ccd8e6",
     "nav_count": "#dfe8f1",
     "path": "#7d8ea3",
     "ok": "#11865a",
@@ -81,6 +83,8 @@ DARK = {
     "control": "#2a3a4d",
     "control_hover": "#3d5168",
     "nav_hover": "#121c29",
+    "title_hover": "#1a2634",
+    "title_press": "#243142",
     "nav_count": "#162130",
     "path": "#8c9eb3",
     "ok": "#3fd68c",
@@ -151,9 +155,17 @@ QMainWindow, QWidget#Root { background: $app; }
 QWidget#Page, QStackedWidget#PageStack { background: $main; }
 QToolTip {
     background: $surface; color: $text; border: 1px solid $border_strong;
-    padding: 5px 7px; border-radius: 5px;
+    padding: 3px 6px; font-size: 12px;
 }
 QFrame#Sidebar { background: $chrome; border-right: 1px solid $border; }
+
+QWidget#TitleBar { background: $chrome; border-bottom: 1px solid transparent; }
+QToolButton#WinButton { background: transparent; border: none; border-radius: 0; }
+QToolButton#WinButton:hover { background: $title_hover; }
+QToolButton#WinButton:pressed { background: $title_press; }
+QToolButton#WinClose { background: transparent; border: none; border-radius: 0; }
+QToolButton#WinClose:hover { background: #c42b1c; }
+QToolButton#WinClose:pressed { background: #b12317; }
 QLabel#BrandName { font-size: 15px; font-weight: 700; }
 QLabel#BrandSub { font-size: 11.5px; color: $text3; }
 QLabel#NavLabel { font-size: 11px; color: $text3; padding-left: 10px; }
@@ -369,9 +381,7 @@ QLabel#AccentText { color: $accent_text; font-size: 12px; font-weight: 500; }
 QFrame#ModeTile { background: $mode; border: 1px solid $border; border-radius: 8px; }
 QLabel#ModeTitle { font-size: 12px; font-weight: 500; }
 QLabel#ModeSub { font-size: 11px; color: $text3; }
-QFrame#ContactIcon { background: $accent_soft; border-radius: 9px; }
 QFrame#EmptyIcon { background: $surface2; border: 1px solid $border; border-radius: 14px; }
-QLabel#ContactTitle { font-size: 12.5px; font-weight: 600; }
 QLabel#ContactMeta { font-size: 11.5px; color: $text2; }
 QLabel#AboutTitle { font-size: 16px; font-weight: 700; }
 QPushButton#EmailLink {

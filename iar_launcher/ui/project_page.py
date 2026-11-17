@@ -285,7 +285,7 @@ class ProjectPage(QWidget):
                     buttons.insert(0, scan_btn)
                 empty = EmptyState(
                     "还没有最近项目",
-                    "打开一个 .eww 工程后，它会出现在这里并按最近打开时间排序。也可以把工程拖进窗口。",
+                    "打开或拖入一个 .eww 工程后，\n它会按最近打开顺序出现在这里。",
                     "folder",
                     buttons,
                 )

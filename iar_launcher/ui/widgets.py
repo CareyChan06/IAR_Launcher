@@ -219,8 +219,15 @@ class EmptyState(QWidget):
         text_label.setObjectName("EmptyText")
         text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         text_label.setWordWrap(True)
-        text_label.setMaximumWidth(360)
-        layout.addWidget(text_label, 0, Qt.AlignmentFlag.AlignHCenter)
+        # 固定 360px 宽：换行点完全由文案里的 \n 控制（在逗号处断行，不拆词），
+        # 超长时才自动兜底换行。stretch 行保证整体水平居中。
+        text_label.setFixedWidth(360)
+        text_row = QHBoxLayout()
+        text_row.setContentsMargins(0, 0, 0, 0)
+        text_row.addStretch(1)
+        text_row.addWidget(text_label)
+        text_row.addStretch(1)
+        layout.addLayout(text_row)
 
         if buttons:
             row = QHBoxLayout()

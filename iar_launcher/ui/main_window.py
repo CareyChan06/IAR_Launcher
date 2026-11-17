@@ -27,9 +27,10 @@ from .icons import icon
 from .project_page import ProjectPage
 from .settings_page import SettingsPage
 from .theme import ThemeController
+from .titlebar import TitleBar
 from .toolchain_page import ToolchainPage
 from .widgets import ConfirmDialog, ToastManager, make_button, repolish, set_prop
-from .winchrome import apply_titlebar_theme
+from .winchrome import IS_WINDOWS, WindowsFrame, apply_titlebar_theme
 
 
 class MainWindow(QMainWindow):
@@ -51,6 +52,14 @@ class MainWindow(QMainWindow):
         root_layout = QVBoxLayout(root)
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
+
+        self._frame = WindowsFrame(self)
+        self.title_bar = TitleBar()
+        self.title_bar.minimize_requested.connect(self.showMinimized)
+        self.title_bar.toggle_maximize_requested.connect(self._toggle_maximize)
+        self.title_bar.close_requested.connect(self.close)
+        self.title_bar.setVisible(False)
+        root_layout.addWidget(self.title_bar)
 
         body = QWidget()
         body_layout = QHBoxLayout(body)
@@ -155,6 +164,7 @@ class MainWindow(QMainWindow):
         self.theme.changed.connect(self._on_theme_changed)
         self.switch_page("projects")
         self.refresh_chrome()
+        self._apply_titlebar_mode()
         self._center()
         self._first_run_checked = False
 
@@ -193,6 +203,7 @@ class MainWindow(QMainWindow):
     def _on_theme_changed(self) -> None:
         self._refresh_nav_icons()
         self._apply_titlebar_theme()
+        self.title_bar.refresh(self.theme.palette)
         self.refresh_chrome()
         self.pages["projects"].refresh_theme()
         self.pages["chains"].refresh_theme()
@@ -208,9 +219,50 @@ class MainWindow(QMainWindow):
             palette["border"],
         )
 
+    # ── 标题栏模式 ──
+    def titlebar_setting(self) -> str:
+        mode = str(self.store.appearance.get("titlebar", "custom"))
+        return mode if mode in {"native", "custom"} else "custom"
+
+    def set_titlebar_mode(self, mode: str) -> None:
+        if mode in {"native", "custom"}:
+            self.store.set_appearance(titlebar=mode)
+            self._apply_titlebar_mode()
+
+    def _apply_titlebar_mode(self) -> None:
+        use_custom = IS_WINDOWS and self.titlebar_setting() == "custom"
+        flags = self.windowFlags()
+        wants = flags | Qt.WindowType.FramelessWindowHint if use_custom else flags & ~Qt.WindowType.FramelessWindowHint
+        if wants != flags:
+            visible = self.isVisible()
+            self.setWindowFlags(wants)
+            if visible:
+                self.show()
+        self.title_bar.setVisible(use_custom)
+        self.title_bar.set_maximized(self.isMaximized())
+        self._frame.set_active(use_custom)
+
+    def _toggle_maximize(self) -> None:
+        if self.isMaximized():
+            self.showNormal()
+        else:
+            self.showMaximized()
+
+    def changeEvent(self, event) -> None:  # type: ignore[override]
+        super().changeEvent(event)
+        if event.type() == event.Type.WindowStateChange:
+            self.title_bar.set_maximized(self.isMaximized())
+
+    def nativeEvent(self, event_type, message) -> tuple[bool, int]:  # type: ignore[override]
+        handled, result = self._frame.handle(message)
+        if handled:
+            return True, result
+        return super().nativeEvent(event_type, message)
+
     def showEvent(self, event) -> None:  # type: ignore[override]
         super().showEvent(event)
         self._apply_titlebar_theme()
+        self._apply_titlebar_mode()
         if not getattr(self, "_first_run_checked", True):
             self._first_run_checked = True
             QTimer.singleShot(350, self._maybe_first_run)

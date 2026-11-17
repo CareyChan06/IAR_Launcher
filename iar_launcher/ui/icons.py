@@ -38,6 +38,11 @@ PATHS = {
     "refresh": '<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>',
     "min": '<path d="M5 12h14"/>',
     "max": '<rect x="5" y="5" width="14" height="14" rx="1"/>',
+    "win-min": '<path d="M4.5 12h15"/>',
+    "win-max": '<rect x="5.5" y="5.5" width="13" height="13" rx="1.2"/>',
+    "win-restore": '<rect x="8" y="4.5" width="11.5" height="11.5" rx="1.2"/><path d="M4.5 8.5v9a2 2 0 0 0 2 2h9"/>',
+    "window": '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8.5h18"/>',
+    "link": '<path d="M10 13.5a4.5 4.5 0 0 0 6.36 0l2.5-2.5a4.5 4.5 0 0 0-6.36-6.36L11.1 6.4"/><path d="M14 10.5a4.5 4.5 0 0 0-6.36 0l-2.5 2.5a4.5 4.5 0 0 0 6.36 6.36l1.39-1.4"/>',
 }
 FILL_PATHS = {"star"}
 FILLED = {"star", "moon"}
@@ -47,8 +52,14 @@ def _color(value: str) -> str:
     return value if value.startswith("#") else value
 
 
-@lru_cache(maxsize=512)
-def icon(name: str, color: str = "#8495a8", size: int = 16, filled: bool | None = None) -> QIcon:
+@lru_cache(maxsize=1024)
+def icon(
+    name: str,
+    color: str = "#8495a8",
+    size: int = 16,
+    filled: bool | None = None,
+    stroke: float = 1.8,
+) -> QIcon:
     paths = PATHS.get(name, "")
     paths = paths.replace("{color}", color)
     if filled is None:
@@ -56,7 +67,7 @@ def icon(name: str, color: str = "#8495a8", size: int = 16, filled: bool | None 
     fill = color if filled else "none"
     svg = (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" '
-        f'fill="{fill}" stroke="{color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+        f'fill="{fill}" stroke="{color}" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round">'
         f"{paths}</svg>"
     )
     renderer = QSvgRenderer(QByteArray(svg.encode("utf-8")))

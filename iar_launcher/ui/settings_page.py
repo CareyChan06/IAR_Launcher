@@ -132,6 +132,28 @@ class SettingsPage(QWidget):
         preview_layout.addWidget(accent_text)
         preview_layout.addStretch(1)
         appearance.body.addWidget(preview)
+
+        appearance.body.addWidget(HLine())
+
+        titlebar_label = QLabel("窗口标题栏")
+        titlebar_label.setObjectName("FieldLabel")
+        appearance.body.addWidget(titlebar_label)
+        self.titlebar_seg = SegmentedControl(
+            [
+                ("native", "原生", "monitor"),
+                ("custom", "沉浸", "window"),
+            ]
+        )
+        self.titlebar_seg.set_value(main.titlebar_setting())
+        self.titlebar_seg.changed.connect(main.set_titlebar_mode)
+        appearance.body.addWidget(self.titlebar_seg, 0, Qt.AlignmentFlag.AlignLeft)
+        titlebar_hint = QLabel(
+            "沉浸模式去掉系统标题栏，由启动器自绘并跟随主题；"
+            "拖动、贴边吸附、双击最大化等行为保持不变。仅 Windows 生效。"
+        )
+        titlebar_hint.setObjectName("Hint")
+        titlebar_hint.setWordWrap(True)
+        appearance.body.addWidget(titlebar_hint)
         layout.addWidget(appearance)
 
         data_card = Card()
@@ -189,7 +211,9 @@ class SettingsPage(QWidget):
     def reset(self) -> None:
         self.main.theme.set_mode("light")
         self.main.theme.set_accent("red")
-        self.main.toast("ok", "已恢复默认外观", "浅色主题 · 朱红")
+        self.main.set_titlebar_mode("custom")
+        self.titlebar_seg.set_value("custom")
+        self.main.toast("ok", "已恢复默认外观", "浅色主题 · 朱红 · 沉浸标题栏")
 
     def refresh_theme(self) -> None:
         self._on_theme_changed()
